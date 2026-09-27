@@ -1,5 +1,6 @@
-# On a version tag: publish the WebApi and the SignalR service for linux-x64
-# (framework-dependent, the host has the ASP.NET Core 8 runtime), sign each
+# On a version tag: publish the WebApi and the SignalR service for linux-x64,
+# self-contained (the estate's hosts run Ubuntu 26.04, whose Microsoft feed
+# carries no .NET 8 runtime; the publish brings its own), sign each
 # tarball keyless with cosign (Sigstore) under this workflow's identity, and
 # publish them as a GitHub release. The estate's deploy (innonova/iac)
 # verifies the bundle against this repository and workflow before installing.
@@ -21,7 +22,7 @@ jobs:
         run: |
           for p in WebApi:mimiri-webapi SignalR:mimiri-signalr; do
             proj="${p%%:*}"; name="${p##*:}"
-            dotnet publish "Mimer.Notes.$proj/Mimer.Notes.$proj.csproj" -c Release -r linux-x64 --self-contained false -o "out/$name" -p:Version="${GITHUB_REF_NAME#v}"
+            dotnet publish "Mimer.Notes.$proj/Mimer.Notes.$proj.csproj" -c Release -r linux-x64 --self-contained true -p:PublishTrimmed=false -o "out/$name" -p:Version="${GITHUB_REF_NAME#v}"
             rm -f "out/$name"/appsettings.Development.json
             tar -C "out/$name" -czf "$name-linux-x64.tar.gz" .
             sha256sum "$name-linux-x64.tar.gz" > "$name-linux-x64.tar.gz.sha256"
