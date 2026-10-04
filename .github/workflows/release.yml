@@ -12,10 +12,10 @@ permissions:
   id-token: write   # keyless signing
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with: { dotnet-version: "10.0.x" }
       - name: publish
         run: |
@@ -26,7 +26,7 @@ jobs:
             tar -C "out/$name" -czf "$name-linux-x64.tar.gz" .
             sha256sum "$name-linux-x64.tar.gz" > "$name-linux-x64.tar.gz.sha256"
           done
-      - uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@v4
       - name: sign
         run: |
           for name in mimiri-webapi mimiri-signalr; do
