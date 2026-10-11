@@ -20,8 +20,9 @@ namespace Mimer.Notes.Server {
 			Dev.Log("CreateDatabase");
 			try {
 				CreateCommonFunctions();
-				CreateRoleTables();
 				CreateUserTables();
+				// after the user tables: admin_users references mimer_user
+				CreateRoleTables();
 				CreateKeyTables();
 				CreateNoteTables();
 				CreateShareTables();
