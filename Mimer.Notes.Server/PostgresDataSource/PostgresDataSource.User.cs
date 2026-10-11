@@ -23,6 +23,15 @@ namespace Mimer.Notes.Server {
 				  CONSTRAINT "user_type_name" UNIQUE (name)
 				);
 
+				-- the plans; a database that has them keeps its own
+				INSERT INTO public."user_type" (id, name, max_total_bytes, max_note_bytes, max_note_count, max_history_entries) VALUES
+				  (1, 'free', 104857600, 1048576, 2000, 10),
+				  (2, 'unlimited', 10737418240, 10737418240, 1000000, 100000),
+				  (4, 'tier 1', 1048576000, 10485760, 10000, 10),
+				  (5, 'tier 2', 2097152000, 10485760, 20000, 10),
+				  (6, 'tier 3', 5242880000, 10485760, 50000, 10)
+				ON CONFLICT DO NOTHING;
+
 				CREATE TABLE IF NOT EXISTS public."mimer_user" (
 				  id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
 				  username character varying(50) NOT NULL,
@@ -57,8 +66,12 @@ namespace Mimer.Notes.Server {
 				  write_bytes bigint NOT NULL DEFAULT 0,
 				  creates bigint NOT NULL DEFAULT 0,
 				  deletes bigint NOT NULL DEFAULT 0,
-				  notifications bigint NOT NULL DEFAULT 0
+				  notifications bigint NOT NULL DEFAULT 0,
+				  notes bigint NOT NULL DEFAULT 0
 				);
+
+				-- update_user_stats_size() and GetUser use it; tables made before it was added lack it
+				ALTER TABLE public."user_stats" ADD COLUMN IF NOT EXISTS notes bigint NOT NULL DEFAULT 0;
 
 				CREATE OR REPLACE FUNCTION update_user_stats_size()
 				RETURNS TRIGGER AS $$
