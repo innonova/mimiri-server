@@ -127,9 +127,11 @@ string names. There is no test project.
 Release: tag `vX.Y.Z` on `main`. `.github/workflows/release.yml`
 publishes both services for linux-x64 (framework-dependent, the hosts
 have the ASP.NET Core 10 runtime), tars each, signs with cosign and
-creates a GitHub release. Deploying is a tag bump in the estate's
-`environments/<env>/versions.yml` (`mimiri-webapi`, `mimiri-signalr`),
-dev first. `build.webapi.sh` and `build.signalr.sh` are the older
+creates a GitHub release. Production deploys by a tag bump in the
+estate's `environments/prod/versions.yml` (`mimiri-webapi`,
+`mimiri-signalr`); the dev stage (`dev-api`, `dev-ws`) runs on the
+office machines since 2026-10-11 and deploys with
+`mimiri-project/dev-stage/deploy.sh`. `build.webapi.sh` and `build.signalr.sh` are the older
 folder-publish used before the estate.
 
 ## Contributing
